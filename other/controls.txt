@@ -1,0 +1,2 @@
+Use arrow keys to move letter between students
+Use C to go to the next level
