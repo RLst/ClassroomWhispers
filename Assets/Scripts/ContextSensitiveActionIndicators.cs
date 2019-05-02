@@ -25,10 +25,14 @@ public class ContextSensitiveActionIndicators : MonoBehaviour {
 	void Start () {
         //Student s = Student.FindNeareastStudentInHierarchy(gameObject);
         student = gameObject.FindNeareastComponentInHierarchy<Student>();
+
+        //If there is a student component on somewhere on this object
         if (student != null)
         {
+            //Loop through all connected students
             foreach (var cs in student.Students)
             {
+                //If the student 
                 if (cs.Direction < PassDirection.NONE)
                 {
                     int idir = (int)cs.Direction;
