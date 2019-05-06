@@ -1,16 +1,36 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using UnityEditor;
 using UnityEngine;
 
-public class LevelDesignerSceneEditor : MonoBehaviour {
+namespace pokoro
+{
+public class LevelDesignerSceneEditor : Editor 
+{
+	SerializedObject obj;
+	SerializedProperty rows;
+	SerializedProperty columns;
+	SerializedProperty posNpad;
 
-	// Use this for initialization
-	void Start () {
+	void OnEnabled()
+	{
+		obj = new SerializedObject(target);
+		rows = obj.FindProperty("rows");
+		columns = obj.FindProperty("columns");
+		posNpad = obj.FindProperty("positionAndPadding");
 		
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+
+	void OnSceneGUI()
+	{
+		//Grab target properties
+		obj.Update();
+
+		Handles.BeginGUI();
+		{
+			EditorGUILayout.PropertyField(posNpad);
+		}
+		Handles.EndGUI();
+
+		obj.ApplyModifiedProperties();
 	}
+}
 }

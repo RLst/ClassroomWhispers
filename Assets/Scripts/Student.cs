@@ -21,26 +21,28 @@ public class ConnectedStudent
 
 public class Student : MonoBehaviour
 {
-    private string[] PassAnimations = { "ReachLeft", "ReachRight", "ReachUp", "ReachBack", "Idle" };
-    private PassDirection[] OppositeDirection = { PassDirection.RIGHT, PassDirection.LEFT, PassDirection.DOWN, PassDirection.UP };
-    public static Vector3[] DirectionVectors = { Vector3.left, Vector3.right, Vector3.up, Vector3.down };
+    string[] PassAnimations = { "ReachLeft", "ReachRight", "ReachUp", "ReachBack", "Idle" };    //KINDA BAD
+    PassDirection[] OppositeDirection = { PassDirection.RIGHT, PassDirection.LEFT, PassDirection.DOWN, PassDirection.UP };  //BAD
+    public static Vector3[] DirectionVectors = { Vector3.left, Vector3.right, Vector3.up, Vector3.down };   //BAD
 
     //public ArrayList<string> test;
-    public List<ConnectedStudent> Students = new List<ConnectedStudent>();
+    public List<ConnectedStudent> Students = new List<ConnectedStudent>();  //Should have a manager that takes care of this
 
-    public bool isStartStudent;
-    public bool isEndStudent;
 
-    private bool isHoldingNote;
+    public bool isStartStudent;     //BAD
+    public bool isEndStudent;       //BAD
 
-    public GameObject NoteObject = null;
+    private bool isHoldingNote;     //BAD. Shoudd be handled by a student manager
 
+    public GameObject NoteObject = null;    //BAD
+
+    //Animation system... probably could be better
     string lastTrigger = "";
-    const float idleResetTimer = 0.5f;
+    const float idleResetTimer = 0.5f; 
     float animTimer = 0.0f;
-
     private Animator anim = null;
 
+    //Could be implemented better
     private ContextSensitiveActionIndicators indicators = null;
 
     // Use this for initialization

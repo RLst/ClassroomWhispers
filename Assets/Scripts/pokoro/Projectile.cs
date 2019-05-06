@@ -24,7 +24,7 @@ public class Projectile : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             //Calculate move vector
-            var particleDirection = Vector3.Normalize(enemy.transform.position - player.transform.position);
+            // var particleDirection = Vector3.Normalize(enemy.transform.position - player.transform.position);
 
             //Instantiate particle at player's position and orientation
             var newProjectile = Instantiate(projectileParticle, player.transform.position, player.transform.rotation);
