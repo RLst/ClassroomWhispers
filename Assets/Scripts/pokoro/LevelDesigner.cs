@@ -12,13 +12,19 @@ namespace pokoro
         //	1. StudentPrefab : GameObject
         //	2. rows, columns, posNpadding parameters
 
+        [Header("Classroom Config")]
         [SerializeField] int rows = 2;
         [SerializeField] int columns = 4;
-        [SerializeField] Vector2 position = new Vector2(0, 0);
-        [SerializeField] Vector2 padding = new Vector2(2, 2);
+        // [SerializeField] Vector2 position;
+        public Vector2 padding = new Vector2(2, 2);
 
+        [Header("Create")]
         [SerializeField] GameObject studentPrefab;
 
+        void OnEnable()
+        {
+            // position = transform.position;
+        }
 
         void OnDrawGizmos()
         {
@@ -33,10 +39,10 @@ namespace pokoro
                 for (int j = 0; j < rows; j++)
                 {
                     //Calculate the position for the gizmo
-                    Vector2 limboPos = new Vector2(position.x + i * padding.x, position.y + j * padding.y);
+                    Vector2 limboPos = new Vector2(transform.position.x + i * padding.x, transform.position.y + j * padding.y);
 
                     //Draw the gizmo
-                    Gizmos.DrawIcon(limboPos, "basic-gizmo-icon.png", true);
+                    Gizmos.DrawIcon(limboPos, "marker-red.png", false);
                 }
             }
         }
@@ -56,7 +62,7 @@ namespace pokoro
                     for (int j = 0; j < rows; j++)
                     {
                         //Calculate the position for the gizmo
-                        Vector2 limboStudentPos = new Vector2(position.x + i * padding.x, position.y + j * padding.y);
+                        Vector2 limboStudentPos = new Vector2(transform.position.x + i * padding.x, transform.position.y + j * padding.y);
 
                         //Create the student
                         var limboStudent = Instantiate(studentPrefab, limboStudentPos, Quaternion.identity);

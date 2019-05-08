@@ -9,55 +9,67 @@ namespace pokoro
     public class LevelDesignerEditor : Editor
     {
         LevelDesigner levelDesigner;
-        SerializedObject obj;
-        SerializedProperty rows;
-        SerializedProperty columns;
-        SerializedProperty position;
-        SerializedProperty padding;
+        SerializedObject tgt;
+        SerializedProperty pRows;
+        SerializedProperty pColumns;
+        SerializedProperty pPosition;
+        SerializedProperty pPadding;
 
 
         public void OnEnable()
         {
-            obj = new SerializedObject(target);
-            rows = obj.FindProperty("rows");
-            columns = obj.FindProperty("columns");
-            position = obj.FindProperty("position");
-            padding = obj.FindProperty("padding");
+            tgt = new SerializedObject(target);
+            pRows = tgt.FindProperty("rows");
+            pColumns = tgt.FindProperty("columns");
+            pPosition = tgt.FindProperty("position");
+            pPadding = tgt.FindProperty("padding");
 
             levelDesigner = target as LevelDesigner;
         }
 
         public override void OnInspectorGUI()
         {
-            obj.Update();
+            tgt.Update();
 
             DrawDefaultInspector();
 
+            DrawGenerateStudentsButton();
 
-
-            //Randomize students button
-
-            obj.ApplyModifiedProperties();
+            tgt.ApplyModifiedProperties();
         }
 
         void OnSceneGUI()
         {
-            obj.Update();
+            tgt.Update();
+
+            Vector3 padding = pPadding.vector2Value;
+
+            //Draw padding handle
+            padding = Handles.FreeMoveHandle(levelDesigner.transform.position + padding, Quaternion.identity, 0.15f, new Vector3(0.1f, 0.1f, 0.1f), Handles.CircleHandleCap);
 
             //Draw position gizmo
-            position.vector2Value = Handles.PositionHandle(position.vector2Value, Quaternion.identity);
+            // position.vector2Value = Handles.PositionHandle(position.vector2Value, Quaternion.identity);
 
-            Handles.BeginGUI();
+            // Handles.BeginGUI();
+            // {
+            //     // DrawGenerateStudentsButton();
+            // }
+            // Handles.EndGUI();
+
+            // Debug.Log("Padding: " + padding);
+
+            levelDesigner.padding = padding - levelDesigner.transform.position;
+
+            tgt.ApplyModifiedProperties();
+        }
+
+        private void DrawGenerateStudentsButton()
+        {
+            //Generate students button
+            if (GUILayout.Button("Generate Students"))
             {
-                //Generate students button
-                if (GUILayout.Button("Generate Students", GUILayout.Width(150)))
-                {
-                    levelDesigner.GenerateStudents();
-                }
+                levelDesigner.GenerateStudents();
             }
-            Handles.EndGUI();
-
-            obj.ApplyModifiedProperties();
         }
 
 
@@ -78,6 +90,9 @@ namespace pokoro
     }
 
 }
+
+
+
 
 
 // //GUI 
