@@ -72,7 +72,7 @@ public class AudioManager : MonoBehaviour {
 
     public List<ReapeatingAmbient> RepeatingAmbients = new List<ReapeatingAmbient>();
 
-    private AudioSource _ambientSource;
+    // private AudioSource _ambientSource;
     private AudioSource _actionSource;
 
     private Dictionary<string, RandomSFX> _lookup = new Dictionary<string, RandomSFX>();
@@ -81,7 +81,7 @@ public class AudioManager : MonoBehaviour {
     void Start () {
         Instance = this;
 
-        _ambientSource = gameObject.transform.Find("AmbientSFX").GetComponent<AudioSource>();
+        // _ambientSource = gameObject.transform.Find("AmbientSFX").GetComponent<AudioSource>();
         _actionSource = gameObject.transform.Find("ActionSFX").GetComponent<AudioSource>();
 
         foreach(var sfx in SFXGroups)

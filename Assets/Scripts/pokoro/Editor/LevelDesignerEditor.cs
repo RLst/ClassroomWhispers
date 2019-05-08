@@ -10,18 +10,18 @@ namespace pokoro
     {
         LevelDesigner levelDesigner;
         SerializedObject tgt;
-        SerializedProperty pRows;
-        SerializedProperty pColumns;
-        SerializedProperty pPosition;
+        // SerializedProperty pRows;
+        // SerializedProperty pColumns;
+        // SerializedProperty pPosition;
         SerializedProperty pPadding;
 
 
         public void OnEnable()
         {
             tgt = new SerializedObject(target);
-            pRows = tgt.FindProperty("rows");
-            pColumns = tgt.FindProperty("columns");
-            pPosition = tgt.FindProperty("position");
+            // pRows = tgt.FindProperty("rows");
+            // pColumns = tgt.FindProperty("columns");
+            // pPosition = tgt.FindProperty("position");
             pPadding = tgt.FindProperty("padding");
 
             levelDesigner = target as LevelDesigner;
@@ -45,8 +45,12 @@ namespace pokoro
             Vector3 padding = pPadding.vector2Value;
 
             //Draw padding handle
-            padding = Handles.FreeMoveHandle(levelDesigner.transform.position + padding, Quaternion.identity, 0.15f, new Vector3(0.1f, 0.1f, 0.1f), Handles.CircleHandleCap);
+            padding = Handles.FreeMoveHandle(levelDesigner.transform.position + padding, Quaternion.identity, 0.3f, new Vector3(0.1f, 0.1f, 0.1f), Handles.CircleHandleCap);
 
+            levelDesigner.padding = padding - levelDesigner.transform.position;
+
+            tgt.ApplyModifiedProperties();
+            
             //Draw position gizmo
             // position.vector2Value = Handles.PositionHandle(position.vector2Value, Quaternion.identity);
 
@@ -57,10 +61,6 @@ namespace pokoro
             // Handles.EndGUI();
 
             // Debug.Log("Padding: " + padding);
-
-            levelDesigner.padding = padding - levelDesigner.transform.position;
-
-            tgt.ApplyModifiedProperties();
         }
 
         private void DrawGenerateStudentsButton()

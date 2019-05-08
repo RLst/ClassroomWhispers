@@ -15,7 +15,7 @@ namespace pokoro
 
         public override void OnInspectorGUI()
         {
-
+			base.OnInspectorGUI();
         }
 
         void OnSceneGUI()
