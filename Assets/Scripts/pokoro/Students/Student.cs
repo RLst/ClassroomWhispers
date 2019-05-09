@@ -1,96 +1,246 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace pokoro
 {
-    public enum PassDirection
-    {
-        FORWARD,
-        LEFT,
-        RIGHT,
-        BACKWARD
-    }
+	public enum PassDirection : byte
+	{
+		Up,
+		Right,
+		Down,
+		Left,
+		Count,
+	}
 
-    [System.Serializable]
-    public struct CanPassDirection
-    {
-        public bool forward;
-        public bool backward;
-        public bool left;
-        public bool right;
-    }
+	[System.Serializable]
 
-    public interface IStudent
-    {
-        // [SerializeField] PassDirection[] canPassDirection = new PassDirection[4];
-        // [SerializeField] CanPass canPass;
 
-        void SetAppearance();
+	[System.Serializable]
+	//A class mate is a student that you are connected to
+	public struct ConnectedClassmate
+	{
+		public PassDirection direction;
+		public Student student;
+	}
 
-        //Set arrows based on position
-        void AutoSetArrows();
+	public interface IStudent
+	{
+		// [SerializeField] PassDirection[] canPassDirection = new PassDirection[4];
+		// [SerializeField] CanPass canPass;
 
-        Student PassNote(PassDirection passDirection);
-        void ReceiveNote(Student student);
+		void SetAppearance();
 
-    }
+		//Set arrows based on position
+		void AutoSetArrows();
 
-    //Normal student that can be derived by other student types
-    public class Student : MonoBehaviour, IStudent
-    {
-        //public is only temp so that it shows up in the inspector
-        public CanPassDirection canPass;
-        public StudentAppearance appearance { get; set; }
+		Student PassNote(PassDirection passDirection);
+		void ReceiveNote(Student student);
 
-        public Classroom classroom; //A student will ALWAYS be in (childed to) a classroom
-        public Animator anim;
-        public AudioManager audio; //ie. Random audio source, maybe singleton audio, maybe scriptable object
+	}
 
-        void Start()
-        {
-            classroom = GetComponentInParent<Classroom>();
-            Assert.IsNotNull(classroom, "Student not attached to any classroom!");
-            anim = GetComponent<Animator>();
-            audio = FindObjectOfType<AudioManager>();
-        }
+	//Normal student that can be derived by other student types
+	[RequireComponent(typeof(Classroom))]
+	public class Student : MonoBehaviour, IStudent
+	{
+		//public is only temp so that it shows up in the inspector
+		public StudentAppearance appearance { get; set; }
+		public Classroom classroom; //A student will ALWAYS be in (childed to) a classroom
+		public Animator anim;
+		public AudioManager audio; //ie. Random audio source, maybe singleton audio, maybe scriptable object
 
-        void OnDrawGizmos()
-        {
 
-        }
-        //---------------------------------------------------------
-        public void AutoSetArrows()
-        {
-            //Check where the students are
-            //Check if there are any students in 
-            throw new NotImplementedException();
-        }
+		//Accessible and modifiable by the designer
+		public ConnectedClassmate[] connectedClassmates;        //Viewable on inspected. Workaround since inspector can't display dictionaries
 
-        public virtual Student PassNote(PassDirection passDirection)
-        {
-            //Get the direction to pass the note
-            //Find the 
+		//Internal. Should transfer over from connectedClassmates
+		protected Dictionary<PassDirection, Student> m_connectedClassmates = new Dictionary<PassDirection, Student>();
 
-            //If receiver found
-            //Animate the student based on the direction
-            //Play sounds
-            //Etc
-            //Return student
+		//Dictionary<Pass Direction, SortedList of Students that are in this direction with corresponding distance values>
+		private Dictionary<PassDirection, SortedList<float, Student>> directionAndDistanceSortedClassmates;
 
-            throw new NotImplementedException();
-        }
+		void Awake()
+		{
+			classroom = GetComponentInParent<Classroom>();
+			Assert.IsNotNull(classroom, "Student not attached to any classroom!");
+			anim = GetComponent<Animator>();
+			audio = FindObjectOfType<AudioManager>();
+		}
 
-        public virtual void ReceiveNote(Student student)
-        {
-            //Calculate the direction based on the position of the student
+		void Start()
+		{
+			//Transfer connected classmates array over to dictionary
+			for (int i = 0; i < connectedClassmates.Length; i++)
+			{
+				m_connectedClassmates.Add(connectedClassmates[i].direction, connectedClassmates[i].student);
+			}
 
-            throw new NotImplementedException();
-        }
+			//Maybe auto connect the classmates?
+		}
 
-        public void SetAppearance()
-        {
-            throw new NotImplementedException();
-        }
-    }
+		void OnDrawGizmos()
+		{
+
+		}
+		//---------------------------------------------------------
+		public void AutoSetArrows()
+		{
+			//Check where the students are
+			//Check if there are any students in 
+			throw new NotImplementedException();
+		}
+
+		//Auto links the connected classmates (probably needs a different one for each type of student)
+		public virtual void AutoConnectClassmates()
+		{
+			SortClassmatesByDirectionAndDistance();
+			NormalConnectClassmates();
+		}
+
+		//Connects the classmates NORMALLY ie. no skips
+		private void NormalConnectClassmates()
+		{
+			//For normal students, just get the first student.transform reference
+			//If this was athletic, a value of 1 would skip once
+			int normalClassmateSkips = 0;
+
+			for (int i = 0; i < (int)PassDirection.Count; i++)
+			{
+				//Get direction of the connection
+				connectedClassmates[i].direction = (PassDirection)i;
+
+				//Get connected student of this direction
+				connectedClassmates[i].student = directionAndDistanceSortedClassmates[(PassDirection)i][normalClassmateSkips];
+			}
+		}
+
+		//Builds a pass direction dictionary of classmates sorted by distance
+		protected void SortClassmatesByDirectionAndDistance()   //TODO Not sure if this should be protected
+		{
+			//Allocate the mega classmate array of arrays
+			directionAndDistanceSortedClassmates = new Dictionary<PassDirection, SortedList<float, Student>>((int)PassDirection.Count);
+
+			for (int i = 0; i < (int)PassDirection.Count; i++)
+			{
+				//Create a new pass direction slot
+				directionAndDistanceSortedClassmates.Add((PassDirection)i, new SortedList<float, Student>());
+
+				//Reset the manhattan distance
+				float shortestManHatDistance = Mathf.Infinity;
+
+				//Go through all classmates...
+				foreach (var otherStudent in classroom.students)
+				{
+
+					//Filter classmates that aren't in the correct direction
+					if (CheckStudentInCorrectDirection(otherStudent, (PassDirection)i))     //i: 0 = UP, 1 = RIGHT, 2 = DOWN, 3 = LEFT
+					{
+						//Find the student with the shortest manhattan distance
+						Vector2 squareLengths;
+						squareLengths.x = Mathf.Abs(otherStudent.transform.position.x) - Mathf.Abs(transform.position.x);
+						squareLengths.y = Mathf.Abs(otherStudent.transform.position.y) - Mathf.Abs(transform.position.y);
+						float manHatDistance = squareLengths.x + squareLengths.y;
+
+						//Save new distance if it's shorter
+						if (manHatDistance < shortestManHatDistance)
+						{
+							shortestManHatDistance = manHatDistance;
+
+							//Record and auto sort current closest student found
+							directionAndDistanceSortedClassmates[(PassDirection)i].Add(shortestManHatDistance, otherStudent);
+						}
+					}
+				}
+			}
+		}
+
+		//Checks if the a student is in the correct direction
+		public bool CheckStudentInCorrectDirection(Student other, PassDirection passDirection)
+		{
+			switch (passDirection)
+			{
+				//These must match the declaration order of the PassDirection enums!
+				case PassDirection.Up:
+					return other.transform.position.y > transform.position.y;
+				case PassDirection.Right:
+					return other.transform.position.x > transform.position.x;
+				case PassDirection.Down:
+					return other.transform.position.y < transform.position.y;
+				case PassDirection.Left:
+					return other.transform.position.x < transform.position.x;
+				default:
+					Debug.LogError("Invalid PassDirection!");
+					return false;
+			}
+		}
+
+		public virtual Student PassNote(PassDirection passDirection)
+		{
+			//Is there a student available?
+			var connectedClassmate = m_connectedClassmates[passDirection];
+			if (connectedClassmate != null)
+			{
+				//If so then:
+				//Transfer note
+				connectedClassmate.ReceiveNote(this);
+
+				//Play animation/sounds etc
+				PlayPassAnimation();
+				PlayPassSoundFX();
+
+				//Return the student passed to
+				return connectedClassmate;
+			}
+			return null;
+		}
+
+		private void PlayPassSoundFX()
+		{
+			Debug.Log("Passing sound");
+			throw new NotImplementedException();
+		}
+
+		private void PlayPassAnimation()
+		{
+			Debug.Log("Passing animation");
+			throw new NotImplementedException();
+		}
+
+		public virtual void ReceiveNote(Student student)
+		{
+			//Calculate the direction based on the position of the student
+
+
+
+			//Play receiving stuff
+
+			throw new NotImplementedException();
+		}
+
+		public void SetAppearance()
+		{
+			throw new NotImplementedException();
+		}
+	}
 }
+
+	// public struct CanPassDirection
+	// {
+	// 	public bool Up;
+	// 	public bool Down;
+	// 	public bool Left;
+	// 	public bool Rigth;
+	// 	// public bool UpRight;
+	// 	// public bool DownRight;
+	// 	// public bool UpLeft;
+	// 	// public bool DownLeft;
+	// }
+
+				//Setup connected classmates array
+			// m_connectedClassmates = new ConnectedClassmate[(int)PassDirection.Count];
+			// for (int i = 0; i < (int)PassDirection.Count; i++)
+			// {
+			// 	m_connectedClassmates[i].direction = (PassDirection)i;
+			// 	m_connectedClassmates[i].student = null;
+			// }
