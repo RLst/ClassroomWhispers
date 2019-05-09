@@ -3,31 +3,37 @@ using UnityEngine;
 
 namespace pokoro.Architecture
 {
-
-    public class Architecture : MonoBehaviour { }
-
-    public class LevelDesigner
+    //Class that manages the gameplay ie. Input, switching game states and screens
+    public class GameplayManager
     {
-        //Editor based class to assist in designing the level
-        StudentManager studentManager;
-
-        public class Gun
-        {
-            public void Shoot() { }
-        }
-        public class RandomAudioPlayer
-        {
-            public void Play() { }
-        }
-
-        public class LevelDesignAssistance : MonoBehaviour
-        //Alt names: LevelDesigner, LevelDesignTools, LevelDesignUtility
-        {
-            //Editor based class to assist in designing the level
-
-        }
+        Classroom classroom;
     }
 
+    public class GameplayInput
+    {
+        //Accessors
+        public bool left { get; }
+        public bool right { get; }
+        public bool up { get; }
+        public bool down { get; }
+        public bool next { get; }
+        public bool prev { get; }
+    }
+
+    public class Classroom : MonoBehaviour
+    {
+        
+    }
+
+    //Controls the student
+    public abstract class Student
+    {
+        StudentAppearance appearance;		//Each student has a certain look (probably randomized)
+        Classroom classroom;				//Each student in (childed to) a classroom
+        public abstract void PassNote();        //Each student type has a different way of passing notes
+    }
+
+	// Tool to help build students ie. their appearance?
     public class StudentUtility : ScriptableObject
     {
         //Alternative names:
@@ -55,33 +61,6 @@ namespace pokoro.Architecture
         }
     }
 
-    public class Student
-    {
-        StudentAppearance appearance;
-        private StudentManager studentManager;
-
-        void Awake()
-        {
-            studentManager = GameObject.FindObjectOfType<StudentManager>();
-        }
-    }
-
-    public class GameManager
-    {
-        StudentManager studentManager;
-
-
-
-    }
-
-    public enum StudentType
-    {
-        Athletic,
-        Skater,
-        Lovers,
-        HallMonitor,
-        ChatterBox
-    }
 
     public enum PassDirection
     {
@@ -99,29 +78,25 @@ namespace pokoro.Architecture
         // Sprite 
     }
 
-
-    public class StudentManager : MonoBehaviour
+    public class LevelDesigner
     {
-        //Class that holds all the students
-        //Build students?
-        //Singleton?
+        //Editor based class to assist in designing the level
+        Classroom classroom;
 
-        public Student[] students;
-
-        void Awake()
+        public class Gun
         {
-            // students = GameObject.FindObjectsOfType(typeof(Student)) as Student[];
+            public void Shoot() { }
         }
-    }
+        public class RandomAudioPlayer
+        {
+            public void Play() { }
+        }
 
+        public class LevelDesignAssistance : MonoBehaviour
+        //Alt names: LevelDesigner, LevelDesignTools, LevelDesignUtility
+        {
+            //Editor based class to assist in designing the level
 
-    public class InputController
-    {
-        public bool left;
-        public bool right;
-        public bool up;
-        public bool down;
-        public bool next;
-        public bool prev;
+        }
     }
 }

@@ -19,6 +19,7 @@ public class ConnectedStudent
     public GameObject Student;
 }
 
+[SelectionBase]
 public class Student : MonoBehaviour
 {
     string[] PassAnimations = { "ReachLeft", "ReachRight", "ReachUp", "ReachBack", "Idle" };    //KINDA BAD

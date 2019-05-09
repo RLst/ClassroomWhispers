@@ -45,7 +45,7 @@ namespace pokoro
             Vector3 padding = pPadding.vector2Value;
 
             //Draw padding handle
-            padding = Handles.FreeMoveHandle(levelDesigner.transform.position + padding, Quaternion.identity, 0.3f, new Vector3(0.1f, 0.1f, 0.1f), Handles.CircleHandleCap);
+            padding = Handles.FreeMoveHandle(levelDesigner.transform.position + padding, Quaternion.identity, 0.25f, new Vector3(0.1f, 0.1f, 0.1f), Handles.CircleHandleCap);
 
             levelDesigner.padding = padding - levelDesigner.transform.position;
 

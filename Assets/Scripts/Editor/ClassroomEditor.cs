@@ -12,7 +12,7 @@ public class ClassroomEditor : Editor
     {
         DrawDefaultInspector();
 
-        Classroom myScript = target as Classroom;
+        // Classroom myScript = target as Classroom;
         if (GUILayout.Button("Generate Student Links"))
         {
             GenerateStudentLinks();
