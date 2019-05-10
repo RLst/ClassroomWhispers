@@ -24,7 +24,7 @@ namespace pokoro
             Debug.Log("Randomizing Students!");
             foreach (var student in students)
             {
-                student.appearance = StudentAppearance.Random();
+                student.appearance = StudentWardrobe.Instance.Randomize(student);
                 //student.RandomizeAppearance();
             }
         }
