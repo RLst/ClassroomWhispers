@@ -19,11 +19,10 @@ public class ContextSensitiveActionIndicators : MonoBehaviour {
     string[] ArrowIds = { "Arrow_L", "Arrow_R", "Arrow_U", "Arrow_D" };
     int ArrowSelected = -1;
 
-    private Student student = null;    
+    private Student student;    
 
 	// Use this for initialization
 	void Start () {
-        //Student s = Student.FindNeareastStudentInHierarchy(gameObject);
         student = gameObject.FindNeareastComponentInHierarchy<Student>();
 
         //If there is a student component on somewhere on this object

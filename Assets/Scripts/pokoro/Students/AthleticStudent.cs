@@ -10,6 +10,9 @@ namespace pokoro
         public override Student PassNote(PassDirection passDirection)
 		{
 			//This student can pass the note over a student
+			
+			//Find all the students in the direction
+			
 			throw new NotImplementedException();
 		}
 		

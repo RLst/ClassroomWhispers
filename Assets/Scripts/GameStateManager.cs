@@ -55,9 +55,9 @@ public class GameStateManager : MonoBehaviour
         winUI = GameObject.Find("WinUI");
         //if (ingameUI != null && pauseUI != null && winUI != null)
         //{
-            uiObjList.Add(ingameUI);
-            uiObjList.Add(pauseUI);
-            uiObjList.Add(winUI);
+            uiObjList?.Add(ingameUI);
+            uiObjList?.Add(pauseUI);
+            uiObjList?.Add(winUI);
         //}        
 
         SwitchGameState(GameStateID.Gameplay);

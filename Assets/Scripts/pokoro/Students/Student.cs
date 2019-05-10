@@ -15,9 +15,6 @@ namespace pokoro
 	}
 
 	[System.Serializable]
-
-
-	[System.Serializable]
 	//A class mate is a student that you are connected to
 	public struct ConnectedClassmate
 	{
@@ -44,21 +41,28 @@ namespace pokoro
 	[RequireComponent(typeof(Classroom))]
 	public class Student : MonoBehaviour, IStudent
 	{
+		public event Action OnClassmatesConnected = delegate {};
+	
 		//public is only temp so that it shows up in the inspector
 		public StudentAppearance appearance { get; set; }
+		public ArrowIndicators arrows;
 		public Classroom classroom; //A student will ALWAYS be in (childed to) a classroom
 		public Animator anim;
 		public AudioManager audio; //ie. Random audio source, maybe singleton audio, maybe scriptable object
 
 
 		//Accessible and modifiable by the designer
-		public ConnectedClassmate[] connectedClassmates;        //Viewable on inspected. Workaround since inspector can't display dictionaries
-
+		// [SerializeField] PassDirectionStudentDictionary connectedClassmates = PassDirectionStudentDictionary.New<PassDirectionStudentDictionary>();
+				
+		
+		//------------- OLD --------------------
+		public ConnectedClassmate[] connectedClassmatesOLD;        //Viewable on inspected. Workaround since inspector can't display dictionaries
 		//Internal. Should transfer over from connectedClassmates
 		protected Dictionary<PassDirection, Student> m_connectedClassmates = new Dictionary<PassDirection, Student>();
-
+		//---------------------------------------	
 		//Dictionary<Pass Direction, SortedList of Students that are in this direction with corresponding distance values>
 		private Dictionary<PassDirection, SortedList<float, Student>> directionAndDistanceSortedClassmates;
+		
 
 		void Awake()
 		{
@@ -70,12 +74,13 @@ namespace pokoro
 
 		void Start()
 		{
-			//Transfer connected classmates array over to dictionary
-			for (int i = 0; i < connectedClassmates.Length; i++)
-			{
-				m_connectedClassmates.Add(connectedClassmates[i].direction, connectedClassmates[i].student);
-			}
-
+			// //Transfer connected classmates array over to dictionary
+			// for (int i = 0; i < connectedClassmates.dictionary.Count; i++)
+			// {
+			// 	connectedClassmates.dictionary.Add(connectedClassmates)
+			// 	connectedClassmates.dictionary.Add(connectedClassmates.dictionary[i].direction, connectedClassmates.dictionary[i].student);
+			// }
+			
 			//Maybe auto connect the classmates?
 		}
 
@@ -95,24 +100,29 @@ namespace pokoro
 		public virtual void AutoConnectClassmates()
 		{
 			SortClassmatesByDirectionAndDistance();
-			NormalConnectClassmates();
+			ConnectClassmatesNORMAL();  //connect classmates normally
 		}
 
 		//Connects the classmates NORMALLY ie. no skips
-		private void NormalConnectClassmates()
+		private void ConnectClassmatesNORMAL()
 		{
 			//For normal students, just get the first student.transform reference
 			//If this was athletic, a value of 1 would skip once
 			int normalClassmateSkips = 0;
 
-			for (int i = 0; i < (int)PassDirection.Count; i++)
+			foreach (var cm in connectedClassmates.dictionary)
 			{
-				//Get direction of the connection
-				connectedClassmates[i].direction = (PassDirection)i;
-
-				//Get connected student of this direction
-				connectedClassmates[i].student = directionAndDistanceSortedClassmates[(PassDirection)i][normalClassmateSkips];
+				cm.Key
 			}
+
+			// for (int i = 0; i < (int)PassDirection.Count; i++)
+			// {
+			// 	//Get direction of the connection
+			// 	connectedClassmates[i].direction = (PassDirection)i;
+
+			// 	//Get connected student of this direction
+			// 	connectedClassmates[i].student = directionAndDistanceSortedClassmates[(PassDirection)i][normalClassmateSkips];
+			// }
 		}
 
 		//Builds a pass direction dictionary of classmates sorted by distance
