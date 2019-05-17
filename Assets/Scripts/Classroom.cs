@@ -16,7 +16,7 @@ public class Classroom : MonoBehaviour {
 
     public static void RandomizeStudentAppearances()
     {
-        var looks = GameObject.FindObjectsOfType<StudentAppearance>();
+        var looks = GameObject.FindObjectsOfType<StudentLook>();
         foreach (var sl in looks)
         {
             if (sl.MyStudent.IsEndStudent || sl.MyStudent.isStartStudent)

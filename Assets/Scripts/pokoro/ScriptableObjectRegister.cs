@@ -14,7 +14,7 @@ namespace pokoro
 		{
 			//Try and auto load all SO's?
 			var foundSOs = Resources.FindObjectsOfTypeAll(typeof(ScriptableObject)) as ScriptableObject[];
-			Debug.Log("Found " + foundSOs.Length + " Scriptable Objects");
+			// Debug.Log("Found " + foundSOs.Length + " Scriptable Objects");
 			scriptableObjects = foundSOs;
 		}
     }

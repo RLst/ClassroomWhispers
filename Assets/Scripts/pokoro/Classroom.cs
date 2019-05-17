@@ -2,10 +2,8 @@
 
 namespace pokoro
 {
-    // [CreateAssetMenu(fileName = "Classroom", menuName = "Managers/Classroom")]
     public class Classroom : MonoBehaviour
     {
-        //// The global:: is temporary!!!
         //// public is temporary!!!
         public Student[] students;
         public Student activeStudent;  //Pointer to student that's holding the note
@@ -25,7 +23,6 @@ namespace pokoro
             foreach (var student in students)
             {
                 student.appearance = StudentWardrobe.Instance.Randomize(student);
-                //student.RandomizeAppearance();
             }
         }
 

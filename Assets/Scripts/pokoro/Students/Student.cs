@@ -14,6 +14,7 @@ namespace pokoro
 		Count,
 	}
 
+
 	[System.Serializable]
 	//A class mate is a student that you are connected to
 	public struct ConnectedClassmate
@@ -22,33 +23,22 @@ namespace pokoro
 		public Student student;
 	}
 
-	public interface IStudent
-	{
-		// [SerializeField] PassDirection[] canPassDirection = new PassDirection[4];
-		// [SerializeField] CanPass canPass;
-
-		void SetAppearance();
-
-		//Set arrows based on position
-		void AutoSetArrows();
-
-		Student PassNote(PassDirection passDirection);
-		void ReceiveNote(Student student);
-
-	}
 
 	//Normal student that can be derived by other student types
 	[RequireComponent(typeof(Classroom))]
-	public class Student : MonoBehaviour, IStudent
+	// [RequireComponent(typeof(StudentAppearance))]
+	// [RequireComponent(typeof(StudentArrows))]
+	public class Student : MonoBehaviour
 	{
 		public event Action OnClassmatesConnected = delegate {};
 	
 		//public is only temp so that it shows up in the inspector
 		public StudentAppearance appearance { get; set; }
-		public ArrowIndicators arrows;
+		// public StudentArrows arrows;
 		public Classroom classroom; //A student will ALWAYS be in (childed to) a classroom
+
 		public Animator anim;
-		public AudioManager audio; //ie. Random audio source, maybe singleton audio, maybe scriptable object
+		public AudioManager am; //ie. Random audio source, maybe singleton audio, maybe scriptable object
 
 
 		//Accessible and modifiable by the designer
@@ -56,9 +46,9 @@ namespace pokoro
 				
 		
 		//------------- OLD --------------------
-		public ConnectedClassmate[] connectedClassmatesOLD;        //Viewable on inspected. Workaround since inspector can't display dictionaries
+		public ConnectedClassmate[] connectedClassmates;        //Viewable on inspected. Workaround since inspector can't display dictionaries
 		//Internal. Should transfer over from connectedClassmates
-		protected Dictionary<PassDirection, Student> m_connectedClassmates = new Dictionary<PassDirection, Student>();
+		// protected Dictionary<PassDirection, Student> m_connectedClassmates = new Dictionary<PassDirection, Student>();
 		//---------------------------------------	
 		//Dictionary<Pass Direction, SortedList of Students that are in this direction with corresponding distance values>
 		private Dictionary<PassDirection, SortedList<float, Student>> directionAndDistanceSortedClassmates;
@@ -69,11 +59,14 @@ namespace pokoro
 			classroom = GetComponentInParent<Classroom>();
 			Assert.IsNotNull(classroom, "Student not attached to any classroom!");
 			anim = GetComponent<Animator>();
-			audio = FindObjectOfType<AudioManager>();
+			am = FindObjectOfType<AudioManager>();
 		}
 
 		void Start()
 		{
+			connectedClassmates = new ConnectedClassmate[(int)PassDirection.Count];
+
+
 			// //Transfer connected classmates array over to dictionary
 			// for (int i = 0; i < connectedClassmates.dictionary.Count; i++)
 			// {
@@ -83,18 +76,8 @@ namespace pokoro
 			
 			//Maybe auto connect the classmates?
 		}
-
-		void OnDrawGizmos()
-		{
-
-		}
 		//---------------------------------------------------------
-		public void AutoSetArrows()
-		{
-			//Check where the students are
-			//Check if there are any students in 
-			throw new NotImplementedException();
-		}
+
 
 		//Auto links the connected classmates (probably needs a different one for each type of student)
 		public virtual void AutoConnectClassmates()
@@ -110,9 +93,9 @@ namespace pokoro
 			//If this was athletic, a value of 1 would skip once
 			int normalClassmateSkips = 0;
 
-			foreach (var cm in connectedClassmates.dictionary)
+			foreach (var cm in connectedClassmates)
 			{
-				cm.Key
+				// cm.Key;
 			}
 
 			// for (int i = 0; i < (int)PassDirection.Count; i++)
@@ -123,6 +106,8 @@ namespace pokoro
 			// 	//Get connected student of this direction
 			// 	connectedClassmates[i].student = directionAndDistanceSortedClassmates[(PassDirection)i][normalClassmateSkips];
 			// }
+
+			throw new NotImplementedException();
 		}
 
 		//Builds a pass direction dictionary of classmates sorted by distance
@@ -185,39 +170,28 @@ namespace pokoro
 			}
 		}
 
+
+
 		public virtual Student PassNote(PassDirection passDirection)
 		{
 			//Is there a student available?
-			var connectedClassmate = m_connectedClassmates[passDirection];
-			if (connectedClassmate != null)
-			{
-				//If so then:
-				//Transfer note
-				connectedClassmate.ReceiveNote(this);
+			// var connectedClassmate = con[passDirection];
+			// if (connectedClassmate != null)
+			// {
+			// 	//If so then:
+			// 	//Transfer note
+			// 	connectedClassmate.ReceiveNote(this);
 
-				//Play animation/sounds etc
-				PlayPassAnimation();
-				PlayPassSoundFX();
+			// 	//Play animation/sounds etc
 
-				//Return the student passed to
-				return connectedClassmate;
-			}
-			return null;
-		}
-
-		private void PlayPassSoundFX()
-		{
-			Debug.Log("Passing sound");
+			// 	//Return the student passed to
+			// 	return connectedClassmate;
+			// }
+			// return null;
 			throw new NotImplementedException();
 		}
 
-		private void PlayPassAnimation()
-		{
-			Debug.Log("Passing animation");
-			throw new NotImplementedException();
-		}
-
-		public virtual void ReceiveNote(Student student)
+		public virtual void ReceiveNote(Student sender)
 		{
 			//Calculate the direction based on the position of the student
 
@@ -228,10 +202,6 @@ namespace pokoro
 			throw new NotImplementedException();
 		}
 
-		public void SetAppearance()
-		{
-			throw new NotImplementedException();
-		}
 	}
 }
 
